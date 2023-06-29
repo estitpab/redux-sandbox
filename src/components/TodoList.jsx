@@ -1,6 +1,7 @@
-import React from "react";
-import { connect } from "react-redux";
-import { UPDATE_TODOO_ACTION } from "../store/todosReducer";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { todosSelector } from "../store/todosSelectors";
+import { toggleTodoAction } from "../store/todosActions";
 
 function TodoItem({ todo, onToggle }) {
   return (
@@ -27,15 +28,22 @@ export function TodoList({ todos, onToggle }) {
   );
 }
 
+export function TodoListStore() {
+  const todos = useSelector(todosSelector);
+  const dispatch = useDispatch();
+  const onToggle = useCallback((todo) => {
+    dispatch(toggleTodoAction(todo));
+  }, [dispatch]);
+  return <TodoList todos={todos} onToggle={onToggle} />;
+}
+
+/**
 export const TodoListStore = connect(
   (state) => ({
-    todos: state.todos,
+    todos: todosSelector(state),
   }),
   (dispatch) => ({
-    onToggle: (todo) =>
-      dispatch({
-        type: UPDATE_TODOO_ACTION,
-        payload: { ...todo, completed: !todo.completed },
-      }),
+    onToggle: (todo) => dispatch(toggleTodoAction(todo)),
   })
 )(TodoList);
+**/
